@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зёма Фарм</title>
+    <style>
+        /* Color Palette */
+        :root {
+            --color-bg: #FFFFFF;
+            --color-primary: #34D399; /* green-400 */
+            --color-primary-dark: #059669; /* green-600 */
+            --color-secondary: #F3F4F6; /* gray-100 */
+            --color-text: #111827; /* gray-900 */
+            --color-muted: #6B7280; /* gray-500 */
+            --radius: 12px;
+            --transition: 0.3s;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #login-screen, #game-screen {
+            width: 100%;
+            max-width: 420px;
+            background: var(--color-bg);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin: 16px;
+        }
+        h1, h2 {
+            margin: 0 0 16px;
+            font-size: 1.5rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--color-muted);
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+        button {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            background-color: var(--color-primary);
+            cursor: pointer;
+            transition: background-color var(--transition);
+        }
+        button:hover {
+            background-color: var(--color-primary-dark);
+        }
+        .error {
+            color: #EF4444;
+            font-size: 0.875rem;
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+        #menu {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        #menu button {
+            flex: 1;
+            margin: 0;
+            background-color: var(--color-secondary);
+            color: var(--color-muted);
+        }
+        #menu button.active {
+            background-color: var(--color-primary);
+            color: #fff;
+        }
+        .content {
+            margin-bottom: 16px;
+        }
+				#level-content{
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 2.1rem;
+	}
+        #main-content button#clicker {
+            width: 160px;
+            height: 160px;
+            background-color: var(--color-secondary);
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 16px;
+			display: flex;
+        }
+        #main-content p {
+            margin: 8px 0;
+        }
+        #leaderboard-container {
+            margin-top: 24px;
+        }
+        #leaderboard {
+			    overflow-y: auto;
+    max-height: 200px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #leaderboard li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid var(--color-secondary);
+        }
+        #leaderboard img {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        .skin-container {
+            text-align: center;
+            margin: 8px;
+        }
+        .skin-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius);
+            border: 1px solid var(--color-muted);
+            transition: filter var(--transition), opacity var(--transition);
+        }
+        .locked-skin {
+            filter: grayscale(100%);
+            opacity: 0.4;
+        }
+        @media (min-width: 640px) {
+            #game-screen {
+                max-width: 800px;
+            }
+            #menu button {
+                max-width: none;
+            }
+        }
+		
+		/* Мобильная оптимизация */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+        height: auto;
+    }
+
+				#level-content{
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 2.1rem;
+	    max-width: 400px;
+    overflow-x: auto;
+	}
+    #game-screen {
+        width: 100%;
+        padding: 10px;
+    }
+
+    #menu button {
+        padding: 13px 25px;
+        font-size: 14px;
+    }
+
+    #main-content button {
+        width: 120px;
+        height: 120px;
+        font-size: 30px;
+    }
+
+
+    #leaderboard-container {
+        padding-top: 10px;
+        font-size: 14px;
+    }
+
+    #leaderboard li {
+        font-size: 14px;
+    }
+
+    /* Увеличение размера текста и элементов для мобильных */
+    #time-played {
+        font-size: 18px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div id="login-screen">
+        <h1>Войти в игру</h1>
+        <input type="text" id="username" placeholder="Введите ник">
+        <button id="play-button">Играть</button>
+        <div id="login-error" class="error"></div>
+    </div>
+
+    <div id="game-screen" style="display: none;">
+        <div id="menu">
+            <button id="main-menu" class="active">Главная</button>
+            <button id="level-menu">Уровень</button>
+            <button id="shop-menu">Магазин</button>
+			<script>
+			document.addEventListener('DOMContentLoaded', function() {
+  const menu = document.getElementById('menu');
+  const buttons = menu.querySelectorAll('button');
+
+  // Добавляем обработчик клика для каждой кнопки
+  buttons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Удаляем класс 'active' у всех кнопок
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Добавляем класс 'active' к нажатой кнопке
+      this.classList.add('active');
+    });
+  });
+});
+			</script>
+        </div>
+        <div id="main-content" class="content">
+            <h2>Главная</h2>
+<button id="clicker"></button>
+
+<style>
+  #clicker {
+    padding: 20px 40px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .emoji {
+    position: absolute;
+    font-size: 24px;
+    animation: emojiAnim 2s forwards;
+  }
+
+  @keyframes emojiAnim {
+    0% {
+      transform: scale(1) translate(0, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0) translate(var(--x), var(--y));
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  const button = document.getElementById('clicker');
+  const emoji = '🍀';  // Эмодзи удачи
+
+  button.addEventListener('mousedown', () => {
+    button.style.transform = 'scale(0.95)';
+  });
+
+  button.addEventListener('mouseup', () => {
+    button.style.transform = 'scale(1)';
+  });
+
+  button.addEventListener('mouseleave', () => {
+    button.style.transform = 'scale(1)';
+  });
+
+  button.addEventListener('click', (event) => {
+    const clickX = event.clientX - button.offsetLeft;  // Позиция клика по X
+    const clickY = event.clientY - button.offsetTop;   // Позиция клика по Y
+
+    for (let i = 0; i < 10; i++) {  // Количество эмодзи на каждый клик
+      const emojiElement = document.createElement('span');
+      emojiElement.classList.add('emoji');
+      emojiElement.textContent = emoji;
+
+      // Случайные координаты для движения эмодзи, исходя из клика
+      const x = (Math.random() * 2000) - 1000;  // Разброс от -200 до 200 по X
+      const y = (Math.random() * 2000) - 1000;  // Разброс от -200 до 200 по Y
+
+      emojiElement.style.setProperty('--x', `${x}px`);
+      emojiElement.style.setProperty('--y', `${y}px`);
+      emojiElement.style.left = `${clickX}px`;
+      emojiElement.style.top = `${clickY}px`;
+
+      button.appendChild(emojiElement);
+
+      // Удаляем эмодзи после окончания анимации
+      setTimeout(() => {
+        emojiElement.remove();
+      }, 2000);
+    }
+  });
+</script>
+
+            <p>Клики: <span id="clicks">0</span></p>
+            <p>Уровень: <span id="level">1</span></p>
+            <p id="time-played">Время в игре: 0д 0ч 0м 0с</p>
+        </div>
+        <div id="level-content" class="content" style="display: none;"></div>
+        <div id="shop-content" class="content" style="display: none;">
+            <h2>Магазин</h2>
+            <button id="buy-gold-nick">Золотой ник (9 999 кликов)</button>
+            <button id="buy-click-multiplier">Купить множитель кликов (50 кликов)</button>
+        </div>
+        <div id="leaderboard-container">
+            <h2>Рейтинг</h2>
+            <ul id="leaderboard"></ul>
+        </div>
+    </div>
+
+
+    <script>
+const _0x29ebdc=_0xef20;function _0xef20(_0x5e4583,_0xce20e2){const _0x2077f3=_0x2077();return _0xef20=function(_0xef2040,_0x12eadf){_0xef2040=_0xef2040-0x184;let _0x538045=_0x2077f3[_0xef2040];return _0x538045;},_0xef20(_0x5e4583,_0xce20e2);}(function(_0x55eef0,_0x564e2d){const _0x1d2f68=_0xef20,_0x4404c1=_0x55eef0();while(!![]){try{const _0x3ba633=-parseInt(_0x1d2f68(0x1be))/0x1+parseInt(_0x1d2f68(0x199))/0x2*(-parseInt(_0x1d2f68(0x1c0))/0x3)+parseInt(_0x1d2f68(0x1a2))/0x4+-parseInt(_0x1d2f68(0x1a6))/0x5*(-parseInt(_0x1d2f68(0x1de))/0x6)+parseInt(_0x1d2f68(0x1ce))/0x7*(parseInt(_0x1d2f68(0x1d1))/0x8)+parseInt(_0x1d2f68(0x1b0))/0x9*(-parseInt(_0x1d2f68(0x1e2))/0xa)+parseInt(_0x1d2f68(0x1a4))/0xb;if(_0x3ba633===_0x564e2d)break;else _0x4404c1['push'](_0x4404c1['shift']());}catch(_0x4a768c){_0x4404c1['push'](_0x4404c1['shift']());}}}(_0x2077,0xb5d1d));const ws=new WebSocket(_0x29ebdc(0x196)),loginScreen=document[_0x29ebdc(0x19f)](_0x29ebdc(0x18c)),gameScreen=document['getElementById'](_0x29ebdc(0x19c)),usernameInput=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1b1)),playButton=document['getElementById'](_0x29ebdc(0x198)),loginError=document[_0x29ebdc(0x19f)](_0x29ebdc(0x18e)),clickerButton=document['getElementById'](_0x29ebdc(0x1d9)),clicksDisplay=document['getElementById'](_0x29ebdc(0x1dc)),levelDisplay=document[_0x29ebdc(0x19f)]('level'),mainMenuButton=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1e3)),levelMenuButton=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1a3)),shopMenuButton=document[_0x29ebdc(0x19f)]('shop-menu'),mainContent=document[_0x29ebdc(0x19f)](_0x29ebdc(0x19d)),levelContent=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1b6)),shopContent=document[_0x29ebdc(0x19f)]('shop-content'),levelImage=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1aa)),currentLevelDisplay=document['getElementById'](_0x29ebdc(0x1c7)),nextLevelDisplay=document[_0x29ebdc(0x19f)]('next-level'),unlockedContentDisplay=document['getElementById'](_0x29ebdc(0x1d3)),leaderboard=document[_0x29ebdc(0x19f)](_0x29ebdc(0x187)),buyGoldNickButton=document[_0x29ebdc(0x19f)](_0x29ebdc(0x1da)),buyClickMultiplierButton=document['getElementById'](_0x29ebdc(0x1a7)),timePlayedDisplay=document[_0x29ebdc(0x19f)]('time-played');let username=null;playButton['addEventListener'](_0x29ebdc(0x1c6),()=>{const _0x307386=_0x29ebdc,_0x29ec12=usernameInput[_0x307386(0x1db)]['trim']();if(!_0x29ec12){loginError[_0x307386(0x1bc)]='Введите\x20ник.';return;}ws[_0x307386(0x1c9)](JSON['stringify']({'type':_0x307386(0x19e),'username':_0x29ec12}));}),clickerButton[_0x29ebdc(0x1dd)](_0x29ebdc(0x1c6),()=>{const _0x27a794=_0x29ebdc;username&&ws[_0x27a794(0x1c9)](JSON['stringify']({'type':_0x27a794(0x1c6)}));}),mainMenuButton['addEventListener'](_0x29ebdc(0x1c6),()=>{const _0x141252=_0x29ebdc;showContent(_0x141252(0x1bd));}),levelMenuButton[_0x29ebdc(0x1dd)](_0x29ebdc(0x1c6),()=>{const _0x5f3017=_0x29ebdc;showContent(_0x5f3017(0x1ad)),fetchLevelInfo();}),shopMenuButton[_0x29ebdc(0x1dd)](_0x29ebdc(0x1c6),()=>{showContent('shop');}),buyGoldNickButton['addEventListener'](_0x29ebdc(0x1c6),()=>{const _0x1efd14=_0x29ebdc;ws['send'](JSON[_0x1efd14(0x1ac)]({'type':_0x1efd14(0x1cb),'boostType':_0x1efd14(0x189)}));}),buyClickMultiplierButton['addEventListener']('click',()=>{const _0x5774cf=_0x29ebdc;ws[_0x5774cf(0x1c9)](JSON['stringify']({'type':_0x5774cf(0x1cb),'boostType':'click_multiplier'}));}),ws[_0x29ebdc(0x1a0)]=()=>{const _0x438cde=_0x29ebdc;console[_0x438cde(0x1d5)](_0x438cde(0x1d8));},ws[_0x29ebdc(0x1cc)]=_0x15ab6d=>{const _0x4bd1a5=_0x29ebdc,_0x472ccd=JSON[_0x4bd1a5(0x190)](_0x15ab6d[_0x4bd1a5(0x1c8)]);console[_0x4bd1a5(0x1d5)]('Received:',_0x472ccd);switch(_0x472ccd[_0x4bd1a5(0x1d0)]){case _0x4bd1a5(0x1ae):username=_0x472ccd[_0x4bd1a5(0x1b1)],clicksDisplay[_0x4bd1a5(0x1bc)]=_0x472ccd[_0x4bd1a5(0x1dc)],levelDisplay[_0x4bd1a5(0x1bc)]=_0x472ccd[_0x4bd1a5(0x1ad)],timePlayedDisplay[_0x4bd1a5(0x1bc)]=_0x4bd1a5(0x18a)+_0x472ccd[_0x4bd1a5(0x185)],loginScreen[_0x4bd1a5(0x1bb)][_0x4bd1a5(0x1df)]='none',gameScreen[_0x4bd1a5(0x1bb)][_0x4bd1a5(0x1df)]=_0x4bd1a5(0x1b8),updateClickerSkin(_0x472ccd[_0x4bd1a5(0x1ad)]);break;case _0x4bd1a5(0x1ca):loginError['textContent']=_0x472ccd[_0x4bd1a5(0x194)];break;case _0x4bd1a5(0x1ab):username=_0x472ccd['username'],clicksDisplay['textContent']=_0x472ccd['clicks'];break;case _0x4bd1a5(0x1a8):timePlayedDisplay[_0x4bd1a5(0x1bc)]='Время\x20в\x20игре:\x20'+_0x472ccd[_0x4bd1a5(0x185)],levelDisplay[_0x4bd1a5(0x1bc)]=_0x472ccd[_0x4bd1a5(0x1ad)],updateClickerSkin(_0x472ccd[_0x4bd1a5(0x1ad)]);break;case'leaderboard':updateLeaderboard(_0x472ccd[_0x4bd1a5(0x187)]);break;case _0x4bd1a5(0x1c4):case'clickMultiplierBought':alert(_0x472ccd[_0x4bd1a5(0x194)]),ws[_0x4bd1a5(0x1c9)](JSON[_0x4bd1a5(0x1ac)]({'type':_0x4bd1a5(0x1c6)}));break;case'updateTimePlayed':timePlayedDisplay[_0x4bd1a5(0x1bc)]=_0x4bd1a5(0x18a)+_0x472ccd['timePlayed'];break;default:console[_0x4bd1a5(0x1d5)]('Unknown\x20message\x20type:',_0x472ccd[_0x4bd1a5(0x1d0)]);}},ws[_0x29ebdc(0x18b)]=()=>{const _0x345bd4=_0x29ebdc;console[_0x345bd4(0x1d5)]('Disconnected\x20from\x20server');};function _0x2077(){const _0x544686=['message','#main-content\x20>\x20h2','ws://itana.pw:6005','locked','play-button','4KSwXBc','timeToUnlock','url(\x27skins/','game-screen','main-content','login','getElementById','onopen','fontWeight','3839180pDPXQP','level-menu','3873804suMeqn','usernameStyle','385CyBrDq','buy-click-multiplier','updateTimeAndLevel','gold','level-image','updateClicks','stringify','level','loginSuccess','skins','1506636bxqwul','username','forEach','skin','Ошибка\x20при\x20получении\x20информации\x20об\x20уровне:','backgroundImage','level-content','none','block','bold','catch','style','textContent','main','1191795BzbuOs','color','71682pGJcwh','innerHTML','add','shop','goldNickBought','skin-container','click','current-level','data','send','error','buyBoost','onmessage','then','4324432hijqMT','alt','type','8ivCqFq','classList','unlockedContentDisplay','\x20в\x20игре.','log','\x20кликов.','appendChild','Connected\x20to\x20server','clicker','buy-gold-nick','value','clicks','addEventListener','30342jUxHKz','display','src','querySelector','20suMePv','main-menu','.png\x27)','timePlayed','grid','leaderboard','cover','gold_nick','Время\x20в\x20игре:\x20','onclose','login-screen','backgroundSize','login-error','div','parse','20px','span','createElement'];_0x2077=function(){return _0x544686;};return _0x2077();}function showContent(_0x28150c){const _0x3339c5=_0x29ebdc;mainContent[_0x3339c5(0x1bb)]['display']=_0x28150c===_0x3339c5(0x1bd)?'block':_0x3339c5(0x1b7),levelContent[_0x3339c5(0x1bb)][_0x3339c5(0x1df)]=_0x28150c===_0x3339c5(0x1ad)?_0x3339c5(0x186):_0x3339c5(0x1b7),shopContent[_0x3339c5(0x1bb)][_0x3339c5(0x1df)]=_0x28150c===_0x3339c5(0x1c3)?_0x3339c5(0x1b8):_0x3339c5(0x1b7);}function fetchLevelInfo(){const _0x37693f=_0x29ebdc,_0x109c73=parseInt(levelDisplay[_0x37693f(0x1bc)]);levelContent[_0x37693f(0x1c1)]='',fetch('/level-info/'+_0x109c73)[_0x37693f(0x1cd)](_0x4a3e19=>_0x4a3e19['json']())['then'](_0xff4bf3=>{const _0x494aee=_0x37693f;_0xff4bf3[_0x494aee(0x1af)][_0x494aee(0x1b2)](_0x4ae2ed=>{const _0x1fcbfd=_0x494aee,_0x10c275=document[_0x1fcbfd(0x193)](_0x1fcbfd(0x18f));_0x10c275[_0x1fcbfd(0x1d2)][_0x1fcbfd(0x1c2)](_0x1fcbfd(0x1c5));const _0x55a712=document[_0x1fcbfd(0x193)]('img');_0x55a712[_0x1fcbfd(0x1e0)]=_0x4ae2ed[_0x1fcbfd(0x1b3)],_0x55a712[_0x1fcbfd(0x1cf)]='Скин\x20уровня\x20'+_0x4ae2ed[_0x1fcbfd(0x1ad)];_0x4ae2ed['status']===_0x1fcbfd(0x197)&&_0x55a712[_0x1fcbfd(0x1d2)][_0x1fcbfd(0x1c2)]('locked-skin');const _0x59184f=document[_0x1fcbfd(0x193)]('p');_0x59184f['textContent']=_0x4ae2ed[_0x1fcbfd(0x19a)]+_0x1fcbfd(0x1d4),_0x10c275[_0x1fcbfd(0x1d7)](_0x55a712),_0x10c275[_0x1fcbfd(0x1d7)](_0x59184f),levelContent[_0x1fcbfd(0x1d7)](_0x10c275);});})[_0x37693f(0x1ba)](_0x14fd75=>console[_0x37693f(0x1ca)](_0x37693f(0x1b4),_0x14fd75));}function updateLeaderboard(_0x5a9ea1){const _0x5e880d=_0x29ebdc;leaderboard[_0x5e880d(0x1c1)]='',_0x5a9ea1[_0x5e880d(0x1b2)](_0x46af32=>{const _0x125a3d=_0x5e880d,_0x49ff0a=document[_0x125a3d(0x193)]('li'),_0x49fc65=document['createElement'](_0x125a3d(0x192));_0x49fc65[_0x125a3d(0x1bc)]=_0x46af32['rank']+'.\x20',_0x49ff0a['appendChild'](_0x49fc65);const _0x37a8df=document[_0x125a3d(0x193)]('img');_0x37a8df['src']=_0x46af32[_0x125a3d(0x1b3)],_0x37a8df[_0x125a3d(0x1bb)]['width']=_0x125a3d(0x191),_0x37a8df[_0x125a3d(0x1bb)]['height']=_0x125a3d(0x191),_0x49ff0a[_0x125a3d(0x1d7)](_0x37a8df);const _0x31a11b=document[_0x125a3d(0x193)](_0x125a3d(0x192));_0x31a11b['textContent']=_0x46af32[_0x125a3d(0x1b1)];_0x46af32[_0x125a3d(0x1a5)]===_0x125a3d(0x1a9)&&(_0x31a11b[_0x125a3d(0x1bb)][_0x125a3d(0x1bf)]=_0x125a3d(0x1a9),_0x31a11b['style'][_0x125a3d(0x1a1)]=_0x125a3d(0x1b9));_0x49ff0a[_0x125a3d(0x1d7)](_0x31a11b);const _0x1d0e72=document[_0x125a3d(0x1e1)](_0x125a3d(0x195));_0x1d0e72[_0x125a3d(0x1bc)]=username;const _0x1b2932=document[_0x125a3d(0x193)](_0x125a3d(0x192));_0x1b2932['textContent']='\x20'+_0x46af32[_0x125a3d(0x1dc)]+_0x125a3d(0x1d6),_0x49ff0a[_0x125a3d(0x1d7)](_0x1b2932),leaderboard[_0x125a3d(0x1d7)](_0x49ff0a);});}function updateClickerSkin(_0xdf34f8){const _0x49bf7c=_0x29ebdc;clickerButton[_0x49bf7c(0x1bb)][_0x49bf7c(0x1b5)]=_0x49bf7c(0x19b)+_0xdf34f8+_0x49bf7c(0x184),clickerButton[_0x49bf7c(0x1bb)][_0x49bf7c(0x18d)]=_0x49bf7c(0x188);}
+	</script>
+</body>
+</html>
