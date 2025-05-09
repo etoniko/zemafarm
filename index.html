@@ -507,7 +507,7 @@ function showContent(content) {
 function fetchLevelInfo() {
     const level = parseInt(levelDisplay.textContent);
 	levelContent.innerHTML = ''; // Очистка предыдущего контента
-    fetch(`/level-info/${level}`)
+    fetch(`https://itana.pw:6005/level-info/${level}`)
         .then(response => response.json())
         .then(data => {
 
